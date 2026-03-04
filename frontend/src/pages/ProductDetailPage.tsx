@@ -48,7 +48,7 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-xl font-semibold text-gray-900">Produkt nie znaleziony</h2>
+        <h2 className="text-xl font-semibold text-white">Produkt nie znaleziony</h2>
         <Link to="/products" className="btn btn-primary mt-4 inline-flex items-center gap-2">
           <ArrowLeft size={18} />
           Wróć do produktów
@@ -59,7 +59,7 @@ export default function ProductDetailPage() {
 
   return (
     <div>
-      <Link to="/products" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-6">
+      <Link to="/products" className="inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 mb-6">
         <ArrowLeft size={18} />
         Wróć do produktów
       </Link>
@@ -67,7 +67,7 @@ export default function ProductDetailPage() {
       <div className="grid md:grid-cols-2 gap-8">
         {/* Images */}
         <div>
-          <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden mb-4">
+          <div className="aspect-square bg-[#2a2a2a] rounded-xl overflow-hidden mb-4">
             {product.images[selectedImage] ? (
               <img
                 src={product.images[selectedImage]}
@@ -76,7 +76,7 @@ export default function ProductDetailPage() {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <Package size={64} className="text-gray-300" />
+                <Package size={64} className="text-gray-600" />
               </div>
             )}
           </div>
@@ -99,22 +99,22 @@ export default function ProductDetailPage() {
 
         {/* Details */}
         <div>
-          <span className="text-sm text-blue-600 font-medium">{product.category?.name}</span>
-          <h1 className="text-3xl font-bold text-gray-900 mt-2">{product.name}</h1>
+          <span className="text-sm text-indigo-400 font-medium">{product.category?.name}</span>
+          <h1 className="text-3xl font-bold text-white mt-2">{product.name}</h1>
           
-          <p className="text-3xl font-bold text-blue-600 mt-4">
+          <p className="text-3xl font-bold text-indigo-400 mt-4">
             {product.price.toFixed(2)} zł
           </p>
 
           {product.description && (
             <div className="mt-6">
-              <h3 className="font-semibold text-gray-900 mb-2">Opis</h3>
-              <p className="text-gray-600 whitespace-pre-wrap">{product.description}</p>
+              <h3 className="font-semibold text-white mb-2">Opis</h3>
+              <p className="text-gray-400 whitespace-pre-wrap">{product.description}</p>
             </div>
           )}
 
           <div className="mt-6">
-            <h3 className="font-semibold text-gray-900 mb-2">Dostępność</h3>
+            <h3 className="font-semibold text-white mb-2">Dostępność</h3>
             {product.stock > 0 ? (
               <p className="text-green-600">
                 Dostępne: {product.stock} szt.

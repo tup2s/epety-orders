@@ -161,8 +161,8 @@ export default function AdminCustomersPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Klienci</h1>
-          <p className="text-gray-500 mt-1">Zarządzaj kontami klientów</p>
+          <h1 className="text-3xl font-bold text-white">Klienci</h1>
+          <p className="text-gray-400 mt-1">Zarządzaj kontami klientów</p>
         </div>
         <button onClick={() => openModal()} className="btn btn-primary flex items-center gap-2">
           <Plus size={20} />
@@ -172,47 +172,47 @@ export default function AdminCustomersPage() {
 
       {customers.length === 0 ? (
         <div className="text-center py-12">
-          <Users size={64} className="mx-auto text-gray-300 mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Brak klientów</h2>
-          <p className="text-gray-500">Dodaj pierwszego klienta</p>
+          <Users size={64} className="mx-auto text-gray-600 mb-4" />
+          <h2 className="text-xl font-semibold text-white mb-2">Brak klientów</h2>
+          <p className="text-gray-400">Dodaj pierwszego klienta</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="bg-[#1a1a1a] rounded-xl shadow-md overflow-hidden border border-[#333]">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-[#242424]">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
                   Klient
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
                   Login
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
                   Data utworzenia
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
                   Zamówienia
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase">
                   Akcje
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-[#333]">
               {customers.map((customer) => (
-                <tr key={customer.id} className="hover:bg-gray-50">
+                <tr key={customer.id} className="hover:bg-[#2a2a2a]">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-blue-600 font-medium">
+                      <div className="w-10 h-10 bg-indigo-500/20 rounded-full flex items-center justify-center">
+                        <span className="text-indigo-400 font-medium">
                           {customer.name.charAt(0).toUpperCase()}
                         </span>
                       </div>
-                      <span className="font-medium text-gray-900">{customer.name}</span>
+                      <span className="font-medium text-white">{customer.name}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-gray-500">{customer.login}</td>
-                  <td className="px-6 py-4 text-gray-500">{formatDate(customer.createdAt)}</td>
+                  <td className="px-6 py-4 text-gray-400">{customer.login}</td>
+                  <td className="px-6 py-4 text-gray-400">{formatDate(customer.createdAt)}</td>
                   <td className="px-6 py-4">
                     <span className="badge bg-blue-100 text-blue-800">
                       {customer._count?.orders || 0} zamówień
@@ -222,21 +222,21 @@ export default function AdminCustomersPage() {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => openPasswordModal(customer.id)}
-                        className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg"
+                        className="p-2 text-yellow-400 hover:bg-yellow-500/10 rounded-lg"
                         title="Reset hasła"
                       >
                         <Key size={18} />
                       </button>
                       <button
                         onClick={() => openModal(customer)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                        className="p-2 text-indigo-400 hover:bg-indigo-500/10 rounded-lg"
                         title="Edytuj"
                       >
                         <Edit size={18} />
                       </button>
                       <button
                         onClick={() => handleDelete(customer)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                        className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg"
                         title="Usuń"
                       >
                         <Trash2 size={18} />
@@ -252,26 +252,26 @@ export default function AdminCustomersPage() {
 
       {/* Add/Edit Customer Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full">
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-xl font-bold text-gray-900">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] rounded-xl max-w-md w-full border border-[#333]">
+            <div className="flex items-center justify-between p-6 border-b border-[#333]">
+              <h2 className="text-xl font-bold text-white">
                 {editingCustomer ? 'Edytuj klienta' : 'Nowy klient'}
               </h2>
-              <button onClick={closeModal} className="p-2 hover:bg-gray-100 rounded-lg">
+              <button onClick={closeModal} className="p-2 hover:bg-[#2a2a2a] rounded-lg text-gray-400">
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg">
                   {error}
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Imię / Nazwa *
                 </label>
                 <input
@@ -285,7 +285,7 @@ export default function AdminCustomersPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Login *
                 </label>
                 <input
@@ -300,7 +300,7 @@ export default function AdminCustomersPage() {
 
               {!editingCustomer && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Hasło *
                   </label>
                   <input
@@ -340,24 +340,24 @@ export default function AdminCustomersPage() {
 
       {/* Reset Password Modal */}
       {showPasswordModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full">
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-xl font-bold text-gray-900">Reset hasła</h2>
-              <button onClick={closePasswordModal} className="p-2 hover:bg-gray-100 rounded-lg">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] rounded-xl max-w-md w-full border border-[#333]">
+            <div className="flex items-center justify-between p-6 border-b border-[#333]">
+              <h2 className="text-xl font-bold text-white">Reset hasła</h2>
+              <button onClick={closePasswordModal} className="p-2 hover:bg-[#2a2a2a] rounded-lg text-gray-400">
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleResetPassword} className="p-6 space-y-4">
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg">
                   {error}
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Nowe hasło *
                 </label>
                 <input

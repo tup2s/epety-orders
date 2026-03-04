@@ -58,8 +58,8 @@ export default function ProductsPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Produkty</h1>
-        <p className="text-gray-500 mt-1">Przeglądaj naszą ofertę</p>
+        <h1 className="text-3xl font-bold text-white">Produkty</h1>
+        <p className="text-gray-400 mt-1">Przeglądaj naszą ofertę</p>
       </div>
 
       {/* Filters */}
@@ -96,15 +96,15 @@ export default function ProductsPage() {
       {/* Products Grid */}
       {filteredProducts.length === 0 ? (
         <div className="text-center py-12">
-          <Package size={48} className="mx-auto text-gray-300 mb-4" />
-          <p className="text-gray-500">Nie znaleziono produktów</p>
+          <Package size={48} className="mx-auto text-gray-600 mb-4" />
+          <p className="text-gray-400">Nie znaleziono produktów</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
             <div key={product.id} className="card hover:shadow-lg transition-shadow">
               <Link to={`/products/${product.id}`}>
-                <div className="aspect-square mb-4 bg-gray-100 rounded-lg overflow-hidden">
+                <div className="aspect-square mb-4 bg-[#2a2a2a] rounded-lg overflow-hidden">
                   {product.images[0] ? (
                     <img
                       src={product.images[0]}
@@ -113,15 +113,15 @@ export default function ProductsPage() {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Package size={48} className="text-gray-300" />
+                      <Package size={48} className="text-gray-600" />
                     </div>
                   )}
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-1">{product.name}</h3>
-                <p className="text-sm text-gray-500 mb-2">{product.category?.name}</p>
+                <h3 className="font-semibold text-white mb-1">{product.name}</h3>
+                <p className="text-sm text-gray-400 mb-2">{product.category?.name}</p>
               </Link>
               <div className="flex items-center justify-between mt-4">
-                <span className="text-xl font-bold text-blue-600">
+                <span className="text-xl font-bold text-indigo-400">
                   {product.price.toFixed(2)} zł
                 </span>
                 {product.stock > 0 ? (

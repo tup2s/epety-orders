@@ -63,12 +63,12 @@ export default function OrdersPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Moje zamówienia</h1>
-        <p className="text-gray-500 mt-1">Historia Twoich zamówień</p>
+        <h1 className="text-3xl font-bold text-white">Moje zamówienia</h1>
+        <p className="text-gray-400 mt-1">Historia Twoich zamówień</p>
       </div>
 
       {showSuccess && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6 flex items-center gap-2">
+        <div className="bg-green-500/10 border border-green-500/30 text-green-400 px-4 py-3 rounded-lg mb-6 flex items-center gap-2">
           <CheckCircle size={20} />
           Zamówienie zostało złożone pomyślnie!
         </div>
@@ -76,9 +76,9 @@ export default function OrdersPage() {
 
       {orders.length === 0 ? (
         <div className="text-center py-12">
-          <Package size={64} className="mx-auto text-gray-300 mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Brak zamówień</h2>
-          <p className="text-gray-500">Nie złożyłeś jeszcze żadnego zamówienia</p>
+          <Package size={64} className="mx-auto text-gray-600 mb-4" />
+          <h2 className="text-xl font-semibold text-white mb-2">Brak zamówień</h2>
+          <p className="text-gray-400">Nie złożyłeś jeszcze żadnego zamówienia</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -89,14 +89,14 @@ export default function OrdersPage() {
                 onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <Package size={24} className="text-blue-600" />
+                  <div className="w-12 h-12 bg-indigo-500/20 rounded-full flex items-center justify-center">
+                    <Package size={24} className="text-indigo-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">
+                    <h3 className="font-semibold text-white">
                       Zamówienie #{order.id}
                     </h3>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <div className="flex items-center gap-2 text-sm text-gray-400">
                       <Calendar size={14} />
                       {formatDate(order.createdAt)}
                     </div>
@@ -107,20 +107,20 @@ export default function OrdersPage() {
                   <span className={`badge ${statusBadgeClass[order.status]}`}>
                     {statusLabels[order.status]}
                   </span>
-                  <span className="font-bold text-blue-600">
+                  <span className="font-bold text-indigo-400">
                     {order.totalPrice.toFixed(2)} zł
                   </span>
                 </div>
               </div>
 
               {expandedOrder === order.id && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <h4 className="font-medium text-gray-900 mb-3">Produkty:</h4>
+                <div className="mt-4 pt-4 border-t border-[#333]">
+                  <h4 className="font-medium text-white mb-3">Produkty:</h4>
                   <div className="space-y-2">
                     {order.items.map((item) => (
                       <div key={item.id} className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gray-100 rounded overflow-hidden">
+                          <div className="w-10 h-10 bg-[#2a2a2a] rounded overflow-hidden">
                             {item.product?.images?.[0] ? (
                               <img
                                 src={item.product.images[0]}
@@ -129,23 +129,23 @@ export default function OrdersPage() {
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">
-                                <Package size={16} className="text-gray-300" />
+                                <Package size={16} className="text-gray-600" />
                               </div>
                             )}
                           </div>
-                          <span>{item.product?.name || 'Produkt usunięty'}</span>
+                          <span className="text-gray-300">{item.product?.name || 'Produkt usunięty'}</span>
                           <span className="text-gray-500">x{item.quantity}</span>
                         </div>
-                        <span className="font-medium">
+                        <span className="font-medium text-white">
                           {(item.priceAtOrder * item.quantity).toFixed(2)} zł
                         </span>
                       </div>
                     ))}
                   </div>
                   {order.notes && (
-                    <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                      <p className="text-sm text-gray-600">
-                        <span className="font-medium">Uwagi:</span> {order.notes}
+                    <div className="mt-4 p-3 bg-[#2a2a2a] rounded-lg border border-[#333]">
+                      <p className="text-sm text-gray-400">
+                        <span className="font-medium text-gray-300">Uwagi:</span> {order.notes}
                       </p>
                     </div>
                   )}

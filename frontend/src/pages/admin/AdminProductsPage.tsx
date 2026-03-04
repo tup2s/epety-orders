@@ -168,8 +168,8 @@ export default function AdminProductsPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Produkty</h1>
-          <p className="text-gray-500 mt-1">Zarządzaj produktami w sklepie</p>
+          <h1 className="text-3xl font-bold text-white">Produkty</h1>
+          <p className="text-gray-400 mt-1">Zarządzaj produktami w sklepie</p>
         </div>
         <button onClick={() => openModal()} className="btn btn-primary flex items-center gap-2">
           <Plus size={20} />
@@ -179,38 +179,38 @@ export default function AdminProductsPage() {
 
       {products.length === 0 ? (
         <div className="text-center py-12">
-          <Package size={64} className="mx-auto text-gray-300 mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Brak produktów</h2>
-          <p className="text-gray-500">Dodaj pierwszy produkt do sklepu</p>
+          <Package size={64} className="mx-auto text-gray-600 mb-4" />
+          <h2 className="text-xl font-semibold text-white mb-2">Brak produktów</h2>
+          <p className="text-gray-400">Dodaj pierwszy produkt do sklepu</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="bg-[#1a1a1a] rounded-xl shadow-md overflow-hidden border border-[#333]">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-[#242424]">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
                   Produkt
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
                   Kategoria
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
                   Cena
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
                   Stan
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase">
                   Akcje
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-[#333]">
               {products.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50">
+                <tr key={product.id} className="hover:bg-[#2a2a2a]">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                      <div className="w-12 h-12 bg-[#2a2a2a] rounded overflow-hidden flex-shrink-0">
                         {product.images[0] ? (
                           <img
                             src={product.images[0]}
@@ -219,34 +219,34 @@ export default function AdminProductsPage() {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <Package size={20} className="text-gray-300" />
+                            <Package size={20} className="text-gray-600" />
                           </div>
                         )}
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">{product.name}</p>
+                        <p className="font-medium text-white">{product.name}</p>
                         {product.description && (
-                          <p className="text-sm text-gray-500 truncate max-w-xs">
+                          <p className="text-sm text-gray-400 truncate max-w-xs">
                             {product.description}
                           </p>
                         )}
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-gray-500">{product.category?.name}</td>
-                  <td className="px-6 py-4 font-medium">{product.price.toFixed(2)} zł</td>
+                  <td className="px-6 py-4 text-gray-400">{product.category?.name}</td>
+                  <td className="px-6 py-4 font-medium text-white">{product.price.toFixed(2)} zł</td>
                   <td className="px-6 py-4">
                     <input
                       type="number"
                       min="0"
                       value={product.stock}
                       onChange={(e) => handleStockChange(product.id, parseInt(e.target.value) || 0)}
-                      className={`w-20 px-2 py-1 border rounded text-center ${
+                      className={`w-20 px-2 py-1 border rounded text-center bg-[#2a2a2a] ${
                         product.stock <= 5
                           ? product.stock === 0
-                            ? 'border-red-300 bg-red-50 text-red-700'
-                            : 'border-orange-300 bg-orange-50 text-orange-700'
-                          : 'border-gray-300'
+                            ? 'border-red-500/50 text-red-400'
+                            : 'border-orange-500/50 text-orange-400'
+                          : 'border-[#333] text-white'
                       }`}
                     />
                   </td>
@@ -254,13 +254,13 @@ export default function AdminProductsPage() {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => openModal(product)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                        className="p-2 text-indigo-400 hover:bg-indigo-500/10 rounded-lg"
                       >
                         <Edit size={18} />
                       </button>
                       <button
                         onClick={() => handleDelete(product)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                        className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -275,26 +275,26 @@ export default function AdminProductsPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-xl font-bold text-gray-900">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-[#333]">
+            <div className="flex items-center justify-between p-6 border-b border-[#333]">
+              <h2 className="text-xl font-bold text-white">
                 {editingProduct ? 'Edytuj produkt' : 'Nowy produkt'}
               </h2>
-              <button onClick={closeModal} className="p-2 hover:bg-gray-100 rounded-lg">
+              <button onClick={closeModal} className="p-2 hover:bg-[#2a2a2a] rounded-lg text-gray-400">
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg">
                   {error}
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Nazwa *
                 </label>
                 <input
@@ -307,7 +307,7 @@ export default function AdminProductsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Opis
                 </label>
                 <textarea
@@ -320,7 +320,7 @@ export default function AdminProductsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Cena (zł) *
                   </label>
                   <input
@@ -334,7 +334,7 @@ export default function AdminProductsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Stan magazynowy
                   </label>
                   <input
@@ -348,7 +348,7 @@ export default function AdminProductsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Kategoria *
                 </label>
                 <select
@@ -368,7 +368,7 @@ export default function AdminProductsPage() {
 
               {/* Images */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Zdjęcia
                 </label>
 

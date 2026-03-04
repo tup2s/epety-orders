@@ -80,8 +80,8 @@ export default function AdminOrdersPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Zamówienia</h1>
-        <p className="text-gray-500 mt-1">Zarządzaj zamówieniami klientów</p>
+        <h1 className="text-3xl font-bold text-white">Zamówienia</h1>
+        <p className="text-gray-400 mt-1">Zarządzaj zamówieniami klientów</p>
       </div>
 
       {/* Filter */}
@@ -107,9 +107,9 @@ export default function AdminOrdersPage() {
 
       {orders.length === 0 ? (
         <div className="text-center py-12">
-          <Package size={64} className="mx-auto text-gray-300 mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Brak zamówień</h2>
-          <p className="text-gray-500">Nie ma zamówień do wyświetlenia</p>
+          <Package size={64} className="mx-auto text-gray-600 mb-4" />
+          <h2 className="text-xl font-semibold text-white mb-2">Brak zamówień</h2>
+          <p className="text-gray-400">Nie ma zamówień do wyświetlenia</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -120,19 +120,19 @@ export default function AdminOrdersPage() {
                   className="flex items-center gap-4 cursor-pointer flex-1"
                   onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
                 >
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Package size={24} className="text-blue-600" />
+                  <div className="w-12 h-12 bg-indigo-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Package size={24} className="text-indigo-400" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3">
-                      <h3 className="font-semibold text-gray-900">
+                      <h3 className="font-semibold text-white">
                         Zamówienie #{order.id}
                       </h3>
                       <span className={`badge ${statusBadgeClass[order.status]}`}>
                         {statusLabels[order.status]}
                       </span>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
+                    <div className="flex items-center gap-4 text-sm text-gray-400 mt-1">
                       <span className="flex items-center gap-1">
                         <User size={14} />
                         {order.user?.name} ({order.user?.login})
@@ -144,10 +144,10 @@ export default function AdminOrdersPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-xl font-bold text-blue-600">
+                    <p className="text-xl font-bold text-indigo-400">
                       {order.totalPrice.toFixed(2)} zł
                     </p>
-                    <p className="text-sm text-gray-500">{order.items.length} produktów</p>
+                    <p className="text-sm text-gray-400">{order.items.length} produktów</p>
                   </div>
                   {expandedOrder === order.id ? (
                     <ChevronUp size={20} className="text-gray-400" />
@@ -158,11 +158,11 @@ export default function AdminOrdersPage() {
               </div>
 
               {expandedOrder === order.id && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="mt-4 pt-4 border-t border-[#333]">
                   <div className="grid md:grid-cols-2 gap-6">
                     {/* Products */}
                     <div>
-                      <h4 className="font-medium text-gray-900 mb-3">Produkty:</h4>
+                      <h4 className="font-medium text-white mb-3">Produkty:</h4>
                       <div className="space-y-2">
                         {order.items.map((item) => (
                           <div key={item.id} className="flex items-center justify-between text-sm">
@@ -176,22 +176,22 @@ export default function AdminOrdersPage() {
                                   />
                                 ) : (
                                   <div className="w-full h-full flex items-center justify-center">
-                                    <Package size={16} className="text-gray-300" />
+                                    <Package size={16} className="text-gray-600" />
                                   </div>
                                 )}
                               </div>
-                              <span>{item.product?.name || 'Produkt usunięty'}</span>
+                              <span className="text-gray-300">{item.product?.name || 'Produkt usunięty'}</span>
                               <span className="text-gray-500">x{item.quantity}</span>
                             </div>
-                            <span className="font-medium">
+                            <span className="font-medium text-white">
                               {(item.priceAtOrder * item.quantity).toFixed(2)} zł
                             </span>
                           </div>
                         ))}
                       </div>
                       {order.notes && (
-                        <div className="mt-4 p-3 bg-yellow-50 rounded-lg">
-                          <p className="text-sm text-yellow-800">
+                        <div className="mt-4 p-3 bg-yellow-500/10 rounded-lg border border-yellow-500/30">
+                          <p className="text-sm text-yellow-400">
                             <span className="font-medium">Uwagi:</span> {order.notes}
                           </p>
                         </div>
@@ -200,7 +200,7 @@ export default function AdminOrdersPage() {
 
                     {/* Status Change */}
                     <div>
-                      <h4 className="font-medium text-gray-900 mb-3">Zmień status:</h4>
+                      <h4 className="font-medium text-white mb-3">Zmień status:</h4>
                       <div className="flex flex-wrap gap-2">
                         {statusOptions.map((status) => (
                           <button
