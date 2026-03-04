@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { getProducts, getCategories } from '../api';
 import { useCart } from '../context/CartContext';
 import type { Product, Category } from '../types';
-import { ShoppingCart, Search, Package } from 'lucide-react';
+import { ShoppingCart, Search, Package, Plus, Minus, X } from 'lucide-react';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -11,6 +11,8 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [quantity, setQuantity] = useState(1);
   const { addItem } = useCart();
 
   useEffect(() => {
@@ -43,8 +45,22 @@ export default function ProductsPage() {
 
   const handleAddToCart = (product: Product) => {
     if (product.stock > 0) {
-      addItem(product);
+      setSelectedProduct(product);
+      setQuantity(1);
     }
+  };
+
+  const confirmAddToCart = () => {
+    if (selectedProduct) {
+      addItem(selectedProduct, quantity);
+      setSelectedProduct(null);
+      setQuantity(1);
+    }
+  };
+
+  const closeModal = () => {
+    setSelectedProduct(null);
+    setQuantity(1);
   };
 
   if (isLoading) {
@@ -141,6 +157,89 @@ export default function ProductsPage() {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Quantity Modal */}
+      {selectedProduct && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="card max-w-md w-full">
+            <div className="flex justify-between items-start mb-4">
+              <h2 className="text-xl font-bold text-white">Dodaj do koszyka</h2>
+              <button onClick={closeModal} className="text-gray-400 hover:text-white">
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="flex gap-4 mb-6">
+              <div className="w-24 h-24 bg-[#2a2a2a] rounded-lg overflow-hidden flex-shrink-0">
+                {selectedProduct.images[0] ? (
+                  <img
+                    src={selectedProduct.images[0]}
+                    alt={selectedProduct.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Package size={32} className="text-gray-600" />
+                  </div>
+                )}
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">{selectedProduct.name}</h3>
+                <p className="text-indigo-400 font-bold">{selectedProduct.price.toFixed(2)} zł</p>
+                <p className="text-sm text-gray-400">Dostępne: {selectedProduct.stock} szt.</p>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-300 mb-2">Ilość</label>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="btn btn-secondary p-2"
+                  disabled={quantity <= 1}
+                >
+                  <Minus size={20} />
+                </button>
+                <input
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value) || 1;
+                    setQuantity(Math.min(Math.max(1, val), selectedProduct.stock));
+                  }}
+                  className="input w-20 text-center"
+                  min="1"
+                  max={selectedProduct.stock}
+                />
+                <button
+                  onClick={() => setQuantity(Math.min(selectedProduct.stock, quantity + 1))}
+                  className="btn btn-secondary p-2"
+                  disabled={quantity >= selectedProduct.stock}
+                >
+                  <Plus size={20} />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center mb-4 p-3 bg-[#2a2a2a] rounded-lg">
+              <span className="text-gray-300">Suma:</span>
+              <span className="text-xl font-bold text-indigo-400">
+                {(selectedProduct.price * quantity).toFixed(2)} zł
+              </span>
+            </div>
+
+            <div className="flex gap-3">
+              <button onClick={closeModal} className="btn btn-secondary flex-1">
+                Anuluj
+              </button>
+              <button onClick={confirmAddToCart} className="btn btn-primary flex-1 flex items-center justify-center gap-2">
+                <ShoppingCart size={18} />
+                Dodaj do koszyka
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
