@@ -18,7 +18,7 @@ export default function Layout() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-blue-100">
+    <div className="min-h-screen" style={{background: 'linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%)'}}>
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 py-8">
         <Outlet />

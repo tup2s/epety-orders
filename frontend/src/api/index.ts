@@ -38,6 +38,10 @@ export const getMe = () => api.get<User>('/auth/me');
 export const changePassword = (currentPassword: string, newPassword: string) =>
   api.patch('/auth/password', { currentPassword, newPassword });
 
+// Admins (admin only)
+export const createAdmin = (data: { login: string; password: string; name: string }) =>
+  api.post('/admin/admins', data);
+
 // Customers (admin only)
 export const getCustomers = () => api.get<Customer[]>('/admin/customers');
 

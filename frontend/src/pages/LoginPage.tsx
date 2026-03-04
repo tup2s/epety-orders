@@ -29,26 +29,26 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 px-4">
+    <div className="min-h-screen flex items-center justify-center px-4" style={{background: 'linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%)'}}>
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="card">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <img src="/logo.svg" alt="E-Pety Logo" className="w-20 h-20" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">E-Pety</h1>
-            <p className="text-gray-500 mt-2">Zaloguj się do swojego konta</p>
+            <h1 className="text-3xl font-bold text-white">E-Pety</h1>
+            <p className="text-gray-400 mt-2">Zaloguj się do swojego konta</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              <div className="bg-red-500/20 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg">
                 {error}
               </div>
             )}
 
             <div>
-              <label htmlFor="login" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="login" className="block text-sm font-medium text-gray-300 mb-1">
                 Login
               </label>
               <input
@@ -63,7 +63,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
                 Hasło
               </label>
               <input

@@ -11,6 +11,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage';
 import AdminProductsPage from './pages/admin/AdminProductsPage';
 import AdminCustomersPage from './pages/admin/AdminCustomersPage';
+import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const { isAdmin, isLoading } = useAuth();
@@ -68,6 +69,7 @@ function AppRoutes() {
         <Route path="/admin/orders" element={<AdminRoute><AdminOrdersPage /></AdminRoute>} />
         <Route path="/admin/products" element={<AdminRoute><AdminProductsPage /></AdminRoute>} />
         <Route path="/admin/customers" element={<AdminRoute><AdminCustomersPage /></AdminRoute>} />
+        <Route path="/admin/settings" element={<AdminRoute><AdminSettingsPage /></AdminRoute>} />
       </Route>
       
       {/* Default redirect */}

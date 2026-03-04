@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth';
 import customerRoutes from './routes/customers';
+import adminRoutes from './routes/admins';
 import categoryRoutes from './routes/categories';
 import productRoutes from './routes/products';
 import orderRoutes from './routes/orders';
@@ -22,6 +23,7 @@ app.use('/uploads', express.static('uploads'));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin/customers', customerRoutes);
+app.use('/api/admin/admins', adminRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
