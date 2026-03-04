@@ -79,11 +79,12 @@ export default function Navbar() {
   );
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200">
+    <nav className="bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link to={isAdmin ? '/admin' : '/products'} className="font-bold text-xl text-blue-600">
-            E-Pety Shop
+          <Link to={isAdmin ? '/admin' : '/products'} className="flex items-center gap-2 font-bold text-xl text-blue-600">
+            <img src="/logo.svg" alt="E-Pety" className="w-8 h-8" />
+            E-Pety
           </Link>
 
           {/* Desktop menu */}

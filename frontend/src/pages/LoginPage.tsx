@@ -33,7 +33,10 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">E-Pety Shop</h1>
+            <div className="flex justify-center mb-4">
+              <img src="/logo.svg" alt="E-Pety Logo" className="w-20 h-20" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">E-Pety</h1>
             <p className="text-gray-500 mt-2">Zaloguj się do swojego konta</p>
           </div>
 
