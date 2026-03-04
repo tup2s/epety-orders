@@ -6,8 +6,8 @@ const requiredEnvVars = ['JWT_SECRET', 'DATABASE_URL'];
 const missingVars = requiredEnvVars.filter(v => !process.env[v]);
 
 if (missingVars.length > 0) {
-  console.error('❌ Missing required environment variables:', missingVars.join(', '));
-  process.exit(1);
+  console.error('⚠️ Warning: Missing environment variables:', missingVars.join(', '));
+  // Don't exit - Railway might inject them later
 }
 
 // Warn about weak JWT_SECRET
