@@ -44,6 +44,12 @@ export const getAdmins = () => api.get<{ id: number; login: string; name: string
 export const createAdmin = (data: { login: string; password: string; name: string }) =>
   api.post('/admin/admins', data);
 
+export const updateAdmin = (id: number, data: { login?: string; name?: string; password?: string }) =>
+  api.put(`/admin/admins/${id}`, data);
+
+export const deleteAdmin = (id: number) =>
+  api.delete(`/admin/admins/${id}`);
+
 // Customers (admin only)
 export const getCustomers = () => api.get<Customer[]>('/admin/customers');
 

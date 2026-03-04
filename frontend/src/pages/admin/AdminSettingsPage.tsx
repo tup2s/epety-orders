@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Key, UserPlus, Shield, Check, AlertCircle, Users } from 'lucide-react';
+import { Key, UserPlus, Shield, Users, Edit, Trash2, X, Save, AlertCircle } from 'lucide-react';
 import * as api from '../../api';
+import { useAuth } from '../../context/AuthContext';
 
 interface Admin {
   id: number;
@@ -10,25 +11,28 @@ interface Admin {
 }
 
 export default function AdminSettingsPage() {
-  // Admin list state
+  const { user } = useAuth();
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [isLoadingAdmins, setIsLoadingAdmins] = useState(true);
 
-  // Password change state
+  // Modal states
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  const [editingAdmin, setEditingAdmin] = useState<Admin | null>(null);
+
+  // Password form
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const [passwordSuccess, setPasswordSuccess] = useState('');
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isSubmittingPassword, setIsSubmittingPassword] = useState(false);
 
-  // New admin state
+  // Admin form
+  const [adminName, setAdminName] = useState('');
   const [adminLogin, setAdminLogin] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
-  const [adminName, setAdminName] = useState('');
   const [adminError, setAdminError] = useState('');
-  const [adminSuccess, setAdminSuccess] = useState('');
-  const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
+  const [isSubmittingAdmin, setIsSubmittingAdmin] = useState(false);
 
   useEffect(() => {
     loadAdmins();
@@ -45,10 +49,22 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handlePasswordChange = async (e: React.FormEvent) => {
+  // Password Modal
+  const openPasswordModal = () => {
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setPasswordError('');
+    setShowPasswordModal(true);
+  };
+
+  const closePasswordModal = () => {
+    setShowPasswordModal(false);
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setPasswordError('');
-    setPasswordSuccess('');
 
     if (newPassword !== confirmPassword) {
       setPasswordError('Nowe hasła nie są identyczne');
@@ -60,207 +76,157 @@ export default function AdminSettingsPage() {
       return;
     }
 
-    setIsChangingPassword(true);
+    setIsSubmittingPassword(true);
     try {
       await api.changePassword(currentPassword, newPassword);
-      setPasswordSuccess('Hasło zostało zmienione');
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
+      closePasswordModal();
     } catch (err: unknown) {
       const error = err as { response?: { data?: { error?: string } } };
       setPasswordError(error.response?.data?.error || 'Błąd zmiany hasła');
     } finally {
-      setIsChangingPassword(false);
+      setIsSubmittingPassword(false);
     }
   };
 
-  const handleCreateAdmin = async (e: React.FormEvent) => {
+  // Admin Modal
+  const openAdminModal = (admin?: Admin) => {
+    if (admin) {
+      setEditingAdmin(admin);
+      setAdminName(admin.name);
+      setAdminLogin(admin.login);
+      setAdminPassword('');
+    } else {
+      setEditingAdmin(null);
+      setAdminName('');
+      setAdminLogin('');
+      setAdminPassword('');
+    }
+    setAdminError('');
+    setShowAdminModal(true);
+  };
+
+  const closeAdminModal = () => {
+    setShowAdminModal(false);
+    setEditingAdmin(null);
+  };
+
+  const handleAdminSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAdminError('');
-    setAdminSuccess('');
 
-    if (adminPassword.length < 6) {
+    if (!editingAdmin && adminPassword.length < 6) {
       setAdminError('Hasło musi mieć minimum 6 znaków');
       return;
     }
 
-    setIsCreatingAdmin(true);
+    if (editingAdmin && adminPassword && adminPassword.length < 6) {
+      setAdminError('Hasło musi mieć minimum 6 znaków');
+      return;
+    }
+
+    setIsSubmittingAdmin(true);
     try {
-      await api.createAdmin({ login: adminLogin, password: adminPassword, name: adminName });
-      setAdminSuccess(`Administrator "${adminName}" został utworzony`);
-      setAdminLogin('');
-      setAdminPassword('');
-      setAdminName('');
+      if (editingAdmin) {
+        const data: { name?: string; login?: string; password?: string } = {
+          name: adminName,
+          login: adminLogin,
+        };
+        if (adminPassword) {
+          data.password = adminPassword;
+        }
+        await api.updateAdmin(editingAdmin.id, data);
+      } else {
+        await api.createAdmin({ login: adminLogin, password: adminPassword, name: adminName });
+      }
+      closeAdminModal();
       loadAdmins();
     } catch (err: unknown) {
       const error = err as { response?: { data?: { error?: string } } };
-      setAdminError(error.response?.data?.error || 'Błąd tworzenia administratora');
+      setAdminError(error.response?.data?.error || 'Wystąpił błąd');
     } finally {
-      setIsCreatingAdmin(false);
+      setIsSubmittingAdmin(false);
+    }
+  };
+
+  const handleDeleteAdmin = async (admin: Admin) => {
+    if (admin.id === user?.id) {
+      alert('Nie możesz usunąć samego siebie');
+      return;
+    }
+
+    if (!confirm(`Czy na pewno chcesz usunąć administratora "${admin.name}"?`)) {
+      return;
+    }
+
+    try {
+      await api.deleteAdmin(admin.id);
+      loadAdmins();
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
+      alert(error.response?.data?.error || 'Błąd usuwania administratora');
     }
   };
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-white">Ustawienia</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-white">Ustawienia</h1>
+      </div>
 
-      <div className="grid gap-8 md:grid-cols-2">
-        {/* Password Change */}
-        <div className="card">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-indigo-500/20 rounded-lg">
-              <Key className="text-indigo-400" size={24} />
+      {/* Quick Actions */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <button
+          onClick={openPasswordModal}
+          className="card hover:border-indigo-500/50 transition-colors group text-left"
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-indigo-500/20 rounded-xl group-hover:bg-indigo-500/30 transition-colors">
+              <Key className="text-indigo-400" size={28} />
             </div>
-            <h2 className="text-xl font-semibold text-white">Zmiana hasła</h2>
+            <div>
+              <h3 className="font-semibold text-white">Zmień hasło</h3>
+              <p className="text-sm text-gray-400">Zaktualizuj swoje hasło</p>
+            </div>
           </div>
+        </button>
 
-          <form onSubmit={handlePasswordChange} className="space-y-4">
-            {passwordError && (
-              <div className="flex items-center gap-2 bg-red-500/20 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg">
-                <AlertCircle size={18} />
-                {passwordError}
-              </div>
-            )}
-            {passwordSuccess && (
-              <div className="flex items-center gap-2 bg-green-500/20 border border-green-500/50 text-green-400 px-4 py-3 rounded-lg">
-                <Check size={18} />
-                {passwordSuccess}
-              </div>
-            )}
-
+        <button
+          onClick={() => openAdminModal()}
+          className="card hover:border-purple-500/50 transition-colors group text-left"
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-purple-500/20 rounded-xl group-hover:bg-purple-500/30 transition-colors">
+              <UserPlus className="text-purple-400" size={28} />
+            </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Obecne hasło
-              </label>
-              <input
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                className="input"
-                required
-              />
+              <h3 className="font-semibold text-white">Dodaj admina</h3>
+              <p className="text-sm text-gray-400">Utwórz nowe konto</p>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Nowe hasło
-              </label>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="input"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Potwierdź nowe hasło
-              </label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="input"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={isChangingPassword}
-              className="btn btn-primary w-full"
-            >
-              {isChangingPassword ? 'Zmieniam...' : 'Zmień hasło'}
-            </button>
-          </form>
-        </div>
-
-        {/* Create Admin */}
-        <div className="card">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-purple-500/20 rounded-lg">
-              <Shield className="text-purple-400" size={24} />
-            </div>
-            <h2 className="text-xl font-semibold text-white">Dodaj administratora</h2>
           </div>
+        </button>
 
-          <form onSubmit={handleCreateAdmin} className="space-y-4">
-            {adminError && (
-              <div className="flex items-center gap-2 bg-red-500/20 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg">
-                <AlertCircle size={18} />
-                {adminError}
-              </div>
-            )}
-            {adminSuccess && (
-              <div className="flex items-center gap-2 bg-green-500/20 border border-green-500/50 text-green-400 px-4 py-3 rounded-lg">
-                <Check size={18} />
-                {adminSuccess}
-              </div>
-            )}
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Nazwa
-              </label>
-              <input
-                type="text"
-                value={adminName}
-                onChange={(e) => setAdminName(e.target.value)}
-                className="input"
-                placeholder="np. Jan Kowalski"
-                required
-              />
+        <div className="card sm:col-span-2 lg:col-span-1">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-green-500/20 rounded-xl">
+              <Shield className="text-green-400" size={28} />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Login
-              </label>
-              <input
-                type="text"
-                value={adminLogin}
-                onChange={(e) => setAdminLogin(e.target.value)}
-                className="input"
-                placeholder="np. jan.kowalski"
-                required
-              />
+              <h3 className="font-semibold text-white">{admins.length}</h3>
+              <p className="text-sm text-gray-400">Administratorów</p>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Hasło
-              </label>
-              <input
-                type="password"
-                value={adminPassword}
-                onChange={(e) => setAdminPassword(e.target.value)}
-                className="input"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={isCreatingAdmin}
-              className="btn btn-primary w-full flex items-center justify-center gap-2"
-            >
-              <UserPlus size={18} />
-              {isCreatingAdmin ? 'Tworzę...' : 'Utwórz administratora'}
-            </button>
-          </form>
+          </div>
         </div>
       </div>
 
       {/* Admin List */}
       <div className="card">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-indigo-500/20 rounded-lg">
-            <Users className="text-indigo-400" size={24} />
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-indigo-500/20 rounded-lg">
+              <Users className="text-indigo-400" size={24} />
+            </div>
+            <h2 className="text-xl font-semibold text-white">Administratorzy</h2>
           </div>
-          <h2 className="text-xl font-semibold text-white">Lista administratorów</h2>
         </div>
 
         {isLoadingAdmins ? (
@@ -268,41 +234,238 @@ export default function AdminSettingsPage() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
           </div>
         ) : admins.length === 0 ? (
-          <p className="text-gray-400 text-center py-4">Brak administratorów</p>
+          <p className="text-gray-400 text-center py-8">Brak administratorów</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-[#242424]">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Nazwa</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Login</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Data utworzenia</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#333]">
-                {admins.map((admin) => (
-                  <tr key={admin.id} className="hover:bg-[#2a2a2a]">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-purple-500/20 rounded-full flex items-center justify-center">
-                          <span className="text-purple-400 font-medium text-sm">
-                            {admin.name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <span className="font-medium text-white">{admin.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-gray-400">{admin.login}</td>
-                    <td className="px-4 py-3 text-gray-400">
-                      {new Date(admin.createdAt).toLocaleDateString('pl-PL')}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="space-y-3">
+            {admins.map((admin) => (
+              <div
+                key={admin.id}
+                className="flex items-center justify-between p-4 bg-[#242424] rounded-xl hover:bg-[#2a2a2a] transition-colors"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center">
+                    <span className="text-purple-400 font-semibold text-lg">
+                      {admin.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-medium text-white">{admin.name}</h3>
+                      {admin.id === user?.id && (
+                        <span className="text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full">
+                          Ty
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-400">@{admin.login}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-500 hidden sm:block">
+                    {new Date(admin.createdAt).toLocaleDateString('pl-PL')}
+                  </span>
+                  <button
+                    onClick={() => openAdminModal(admin)}
+                    className="p-2 text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors"
+                    title="Edytuj"
+                  >
+                    <Edit size={18} />
+                  </button>
+                  {admin.id !== user?.id && (
+                    <button
+                      onClick={() => handleDeleteAdmin(admin)}
+                      className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                      title="Usuń"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
+
+      {/* Password Modal */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] rounded-xl max-w-md w-full border border-[#333]">
+            <div className="flex items-center justify-between p-6 border-b border-[#333]">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-indigo-500/20 rounded-lg">
+                  <Key className="text-indigo-400" size={20} />
+                </div>
+                <h2 className="text-xl font-bold text-white">Zmiana hasła</h2>
+              </div>
+              <button onClick={closePasswordModal} className="p-2 hover:bg-[#2a2a2a] rounded-lg text-gray-400">
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handlePasswordSubmit} className="p-6 space-y-4">
+              {passwordError && (
+                <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg">
+                  <AlertCircle size={18} />
+                  {passwordError}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Obecne hasło
+                </label>
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="input"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Nowe hasło
+                </label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="input"
+                  placeholder="Minimum 6 znaków"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Potwierdź nowe hasło
+                </label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="input"
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4">
+                <button type="button" onClick={closePasswordModal} className="btn btn-secondary">
+                  Anuluj
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingPassword}
+                  className="btn btn-primary flex items-center gap-2"
+                >
+                  {isSubmittingPassword ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  ) : (
+                    <>
+                      <Save size={18} />
+                      Zmień hasło
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Admin Modal */}
+      {showAdminModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] rounded-xl max-w-md w-full border border-[#333]">
+            <div className="flex items-center justify-between p-6 border-b border-[#333]">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-purple-500/20 rounded-lg">
+                  {editingAdmin ? <Edit className="text-purple-400" size={20} /> : <UserPlus className="text-purple-400" size={20} />}
+                </div>
+                <h2 className="text-xl font-bold text-white">
+                  {editingAdmin ? 'Edytuj administratora' : 'Nowy administrator'}
+                </h2>
+              </div>
+              <button onClick={closeAdminModal} className="p-2 hover:bg-[#2a2a2a] rounded-lg text-gray-400">
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleAdminSubmit} className="p-6 space-y-4">
+              {adminError && (
+                <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg">
+                  <AlertCircle size={18} />
+                  {adminError}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Nazwa
+                </label>
+                <input
+                  type="text"
+                  value={adminName}
+                  onChange={(e) => setAdminName(e.target.value)}
+                  className="input"
+                  placeholder="np. Jan Kowalski"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Login
+                </label>
+                <input
+                  type="text"
+                  value={adminLogin}
+                  onChange={(e) => setAdminLogin(e.target.value)}
+                  className="input"
+                  placeholder="np. jan.kowalski"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  {editingAdmin ? 'Nowe hasło (opcjonalne)' : 'Hasło'}
+                </label>
+                <input
+                  type="password"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  className="input"
+                  placeholder={editingAdmin ? 'Pozostaw puste aby nie zmieniać' : 'Minimum 6 znaków'}
+                  required={!editingAdmin}
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4">
+                <button type="button" onClick={closeAdminModal} className="btn btn-secondary">
+                  Anuluj
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingAdmin}
+                  className="btn btn-primary flex items-center gap-2"
+                >
+                  {isSubmittingAdmin ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  ) : (
+                    <>
+                      <Save size={18} />
+                      {editingAdmin ? 'Zapisz zmiany' : 'Utwórz'}
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
