@@ -178,9 +178,14 @@ router.patch('/:id/status', authenticate, isAdmin, async (req: AuthRequest, res:
       return res.status(404).json({ error: 'Zamówienie nie znalezione' });
     }
 
-    // If cancelling, restore stock
-    if (status === 'CANCELLED' && order.status !== 'CANCELLED') {
+    // If cancelling, restore stock and delete order
+    if (status === 'CANCELLED') {
+      if (order.status === 'CANCELLED') {
+        return res.status(400).json({ error: 'Zamówienie już jest anulowane' });
+      }
+
       await prisma.$transaction(async (tx) => {
+        // Restore stock for each product
         for (const item of order.items) {
           await tx.product.update({
             where: { id: item.productId },
@@ -190,11 +195,18 @@ router.patch('/:id/status', authenticate, isAdmin, async (req: AuthRequest, res:
           });
         }
 
-        await tx.order.update({
+        // Delete order items first (due to foreign key)
+        await tx.orderItem.deleteMany({
+          where: { orderId: id },
+        });
+
+        // Delete the order
+        await tx.order.delete({
           where: { id },
-          data: { status },
         });
       });
+
+      return res.json({ message: 'Zamówienie zostało anulowane i usunięte', deleted: true });
     } else {
       await prisma.order.update({
         where: { id },

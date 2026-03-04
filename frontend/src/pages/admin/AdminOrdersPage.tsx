@@ -20,6 +20,7 @@ const statusBadgeClass: Record<OrderStatus, string> = {
 };
 
 const statusOptions: OrderStatus[] = ['NEW', 'PROCESSING', 'SHIPPED', 'COMPLETED', 'CANCELLED'];
+const filterOptions: OrderStatus[] = ['NEW', 'PROCESSING', 'SHIPPED', 'COMPLETED']; // No CANCELLED - they get deleted
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -46,12 +47,18 @@ export default function AdminOrdersPage() {
   const handleStatusChange = async (orderId: number, newStatus: OrderStatus) => {
     setUpdatingOrder(orderId);
     try {
-      await updateOrderStatus(orderId, newStatus);
-      setOrders((prev) =>
-        prev.map((order) =>
-          order.id === orderId ? { ...order, status: newStatus } : order
-        )
-      );
+      const response = await updateOrderStatus(orderId, newStatus);
+      
+      // If order was cancelled and deleted, remove from list
+      if ((response.data as { deleted?: boolean }).deleted) {
+        setOrders((prev) => prev.filter((order) => order.id !== orderId));
+      } else {
+        setOrders((prev) =>
+          prev.map((order) =>
+            order.id === orderId ? { ...order, status: newStatus } : order
+          )
+        );
+      }
     } catch (error) {
       console.error('Error updating order status:', error);
     } finally {
@@ -93,7 +100,7 @@ export default function AdminOrdersPage() {
           >
             Wszystkie
           </button>
-          {statusOptions.map((status) => (
+          {filterOptions.map((status) => (
             <button
               key={status}
               onClick={() => setFilterStatus(status)}
