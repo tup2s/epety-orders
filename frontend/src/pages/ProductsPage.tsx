@@ -202,17 +202,7 @@ export default function ProductsPage() {
                 >
                   <Minus size={20} />
                 </button>
-                <input
-                  type="number"
-                  value={quantity}
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value) || 1;
-                    setQuantity(Math.min(Math.max(1, val), selectedProduct.stock));
-                  }}
-                  className="input w-20 text-center"
-                  min="1"
-                  max={selectedProduct.stock}
-                />
+                <span className="text-xl font-bold text-white w-12 text-center">{quantity}</span>
                 <button
                   onClick={() => setQuantity(Math.min(selectedProduct.stock, quantity + 1))}
                   className="btn btn-secondary p-2"
