@@ -185,91 +185,89 @@ export default function AdminProductsPage() {
         </div>
       ) : (
         <div className="bg-[#1a1a1a] rounded-xl shadow-md overflow-hidden border border-[#333]">
-          <table className="w-full">
-            <thead className="bg-[#242424]">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
-                  Produkt
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
-                  Kategoria
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
-                  Cena
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
-                  Stan
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase">
-                  Akcje
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#333]">
-              {products.map((product) => (
-                <tr key={product.id} className="hover:bg-[#2a2a2a]">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-[#2a2a2a] rounded overflow-hidden flex-shrink-0">
-                        {product.images[0] ? (
-                          <img
-                            src={product.images[0]}
-                            alt=""
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Package size={20} className="text-gray-600" />
-                          </div>
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-medium text-white">{product.name}</p>
-                        {product.description && (
-                          <p className="text-sm text-gray-400 truncate max-w-xs">
-                            {product.description}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-gray-400">{product.category?.name}</td>
-                  <td className="px-6 py-4 font-medium text-white">{product.price.toFixed(2)} zł</td>
-                  <td className="px-6 py-4">
-                    <input
-                      type="number"
-                      min="0"
-                      value={product.stock}
-                      onChange={(e) => handleStockChange(product.id, parseInt(e.target.value) || 0)}
-                      className={`w-20 px-2 py-1 border rounded text-center bg-[#2a2a2a] ${
-                        product.stock <= 5
-                          ? product.stock === 0
-                            ? 'border-red-500/50 text-red-400'
-                            : 'border-orange-500/50 text-orange-400'
-                          : 'border-[#333] text-white'
-                      }`}
-                    />
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => openModal(product)}
-                        className="p-2 text-indigo-400 hover:bg-indigo-500/10 rounded-lg"
-                      >
-                        <Edit size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(product)}
-                        className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[600px]">
+              <thead className="bg-[#242424]">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                    Produkt
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase hidden sm:table-cell">
+                    Kategoria
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                    Cena
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase hidden md:table-cell">
+                    Stan
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase">
+                    Akcje
+                  </th>
                 </tr>
-              ))}
+              </thead>
+              <tbody className="divide-y divide-[#333]">
+                {products.map((product) => (
+                  <tr key={product.id} className="hover:bg-[#2a2a2a]">
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-[#2a2a2a] rounded overflow-hidden flex-shrink-0">
+                          {product.images[0] ? (
+                            <img
+                              src={product.images[0]}
+                              alt=""
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Package size={20} className="text-gray-600" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-medium text-white truncate">{product.name}</p>
+                          <p className="text-sm text-gray-400 sm:hidden">{product.category?.name}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-gray-400 hidden sm:table-cell">{product.category?.name}</td>
+                    <td className="px-4 py-4 font-medium text-white whitespace-nowrap">{product.price.toFixed(2)} zł</td>
+                    <td className="px-4 py-4 hidden md:table-cell">
+                      <input
+                        type="number"
+                        min="0"
+                        value={product.stock}
+                        onChange={(e) => handleStockChange(product.id, parseInt(e.target.value) || 0)}
+                        className={`w-20 px-2 py-1 border rounded text-center bg-[#2a2a2a] ${
+                          product.stock <= 5
+                            ? product.stock === 0
+                              ? 'border-red-500/50 text-red-400'
+                              : 'border-orange-500/50 text-orange-400'
+                            : 'border-[#333] text-white'
+                        }`}
+                      />
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => openModal(product)}
+                          className="p-2 text-indigo-400 hover:bg-indigo-500/10 rounded-lg"
+                        >
+                          <Edit size={18} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(product)}
+                          className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

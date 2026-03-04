@@ -1,8 +1,19 @@
-import { useState } from 'react';
-import { Key, UserPlus, Shield, Check, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Key, UserPlus, Shield, Check, AlertCircle, Users } from 'lucide-react';
 import * as api from '../../api';
 
+interface Admin {
+  id: number;
+  login: string;
+  name: string;
+  createdAt: string;
+}
+
 export default function AdminSettingsPage() {
+  // Admin list state
+  const [admins, setAdmins] = useState<Admin[]>([]);
+  const [isLoadingAdmins, setIsLoadingAdmins] = useState(true);
+
   // Password change state
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -18,6 +29,21 @@ export default function AdminSettingsPage() {
   const [adminError, setAdminError] = useState('');
   const [adminSuccess, setAdminSuccess] = useState('');
   const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
+
+  useEffect(() => {
+    loadAdmins();
+  }, []);
+
+  const loadAdmins = async () => {
+    try {
+      const response = await api.getAdmins();
+      setAdmins(response.data);
+    } catch (error) {
+      console.error('Error loading admins:', error);
+    } finally {
+      setIsLoadingAdmins(false);
+    }
+  };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,6 +92,7 @@ export default function AdminSettingsPage() {
       setAdminLogin('');
       setAdminPassword('');
       setAdminName('');
+      loadAdmins();
     } catch (err: unknown) {
       const error = err as { response?: { data?: { error?: string } } };
       setAdminError(error.response?.data?.error || 'Błąd tworzenia administratora');
@@ -225,6 +252,56 @@ export default function AdminSettingsPage() {
             </button>
           </form>
         </div>
+      </div>
+
+      {/* Admin List */}
+      <div className="card">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-indigo-500/20 rounded-lg">
+            <Users className="text-indigo-400" size={24} />
+          </div>
+          <h2 className="text-xl font-semibold text-white">Lista administratorów</h2>
+        </div>
+
+        {isLoadingAdmins ? (
+          <div className="flex justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+          </div>
+        ) : admins.length === 0 ? (
+          <p className="text-gray-400 text-center py-4">Brak administratorów</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-[#242424]">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Nazwa</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Login</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Data utworzenia</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#333]">
+                {admins.map((admin) => (
+                  <tr key={admin.id} className="hover:bg-[#2a2a2a]">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-purple-500/20 rounded-full flex items-center justify-center">
+                          <span className="text-purple-400 font-medium text-sm">
+                            {admin.name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <span className="font-medium text-white">{admin.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-gray-400">{admin.login}</td>
+                    <td className="px-4 py-3 text-gray-400">
+                      {new Date(admin.createdAt).toLocaleDateString('pl-PL')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

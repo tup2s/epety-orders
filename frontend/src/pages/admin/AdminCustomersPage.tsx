@@ -178,75 +178,80 @@ export default function AdminCustomersPage() {
         </div>
       ) : (
         <div className="bg-[#1a1a1a] rounded-xl shadow-md overflow-hidden border border-[#333]">
-          <table className="w-full">
-            <thead className="bg-[#242424]">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
-                  Klient
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
-                  Login
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
-                  Data utworzenia
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
-                  Zamówienia
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase">
-                  Akcje
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#333]">
-              {customers.map((customer) => (
-                <tr key={customer.id} className="hover:bg-[#2a2a2a]">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-indigo-500/20 rounded-full flex items-center justify-center">
-                        <span className="text-indigo-400 font-medium">
-                          {customer.name.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <span className="font-medium text-white">{customer.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-gray-400">{customer.login}</td>
-                  <td className="px-6 py-4 text-gray-400">{formatDate(customer.createdAt)}</td>
-                  <td className="px-6 py-4">
-                    <span className="badge bg-blue-100 text-blue-800">
-                      {customer._count?.orders || 0} zamówień
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => openPasswordModal(customer.id)}
-                        className="p-2 text-yellow-400 hover:bg-yellow-500/10 rounded-lg"
-                        title="Reset hasła"
-                      >
-                        <Key size={18} />
-                      </button>
-                      <button
-                        onClick={() => openModal(customer)}
-                        className="p-2 text-indigo-400 hover:bg-indigo-500/10 rounded-lg"
-                        title="Edytuj"
-                      >
-                        <Edit size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(customer)}
-                        className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg"
-                        title="Usuń"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[700px]">
+              <thead className="bg-[#242424]">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                    Klient
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase hidden sm:table-cell">
+                    Login
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase hidden md:table-cell">
+                    Data utworzenia
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase hidden sm:table-cell">
+                    Zamówienia
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase">
+                    Akcje
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-[#333]">
+                {customers.map((customer) => (
+                  <tr key={customer.id} className="hover:bg-[#2a2a2a]">
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-indigo-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-indigo-400 font-medium">
+                            {customer.name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-white block">{customer.name}</span>
+                          <span className="text-gray-400 text-sm sm:hidden">{customer.login}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-gray-400 hidden sm:table-cell">{customer.login}</td>
+                    <td className="px-4 py-4 text-gray-400 hidden md:table-cell">{formatDate(customer.createdAt)}</td>
+                    <td className="px-4 py-4 hidden sm:table-cell">
+                      <span className="badge bg-indigo-500/20 text-indigo-400">
+                        {customer._count?.orders || 0} zamówień
+                      </span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => openPasswordModal(customer.id)}
+                          className="p-2 text-yellow-400 hover:bg-yellow-500/10 rounded-lg"
+                          title="Reset hasła"
+                        >
+                          <Key size={18} />
+                        </button>
+                        <button
+                          onClick={() => openModal(customer)}
+                          className="p-2 text-indigo-400 hover:bg-indigo-500/10 rounded-lg"
+                          title="Edytuj"
+                        >
+                          <Edit size={18} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(customer)}
+                          className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg"
+                          title="Usuń"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

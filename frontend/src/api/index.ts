@@ -39,6 +39,8 @@ export const changePassword = (currentPassword: string, newPassword: string) =>
   api.patch('/auth/password', { currentPassword, newPassword });
 
 // Admins (admin only)
+export const getAdmins = () => api.get<{ id: number; login: string; name: string; createdAt: string }[]>('/admin/admins');
+
 export const createAdmin = (data: { login: string; password: string; name: string }) =>
   api.post('/admin/admins', data);
 
