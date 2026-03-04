@@ -44,4 +44,28 @@ app.get('/api/debug/users', async (req, res) => {
   }
 });
 
+// Debug login test - REMOVE IN PRODUCTION
+app.post('/api/debug/test-login', async (req, res) => {
+  const bcrypt = await import('bcryptjs');
+  try {
+    const user = await prisma.user.findUnique({ where: { login: 'admin' } });
+    if (!user) {
+      return res.json({ error: 'No admin user found' });
+    }
+    
+    const testPassword = 'admin123';
+    const isValid = await bcrypt.compare(testPassword, user.password);
+    
+    res.json({
+      adminExists: true,
+      passwordHash: user.password.substring(0, 20) + '...',
+      hashLength: user.password.length,
+      testPasswordValid: isValid,
+      bcryptVersion: bcrypt.default ? 'esm' : 'cjs'
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default app;
