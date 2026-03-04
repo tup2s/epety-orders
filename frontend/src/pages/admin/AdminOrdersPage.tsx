@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getOrders, updateOrderStatus } from '../../api';
 import type { Order, OrderStatus } from '../../types';
-import { Package, Calendar, User, ChevronDown, ChevronUp } from 'lucide-react';
+import { Package, Calendar, User, ChevronDown, ChevronUp, AlertTriangle, X } from 'lucide-react';
 
 const statusLabels: Record<OrderStatus, string> = {
   NEW: 'Nowe',
@@ -28,6 +28,7 @@ export default function AdminOrdersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [expandedOrder, setExpandedOrder] = useState<number | null>(null);
   const [updatingOrder, setUpdatingOrder] = useState<number | null>(null);
+  const [cancelConfirm, setCancelConfirm] = useState<Order | null>(null);
 
   useEffect(() => {
     loadOrders();
@@ -45,6 +46,15 @@ export default function AdminOrdersPage() {
   };
 
   const handleStatusChange = async (orderId: number, newStatus: OrderStatus) => {
+    // If cancelling, show confirmation modal first
+    if (newStatus === 'CANCELLED') {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        setCancelConfirm(order);
+      }
+      return;
+    }
+
     setUpdatingOrder(orderId);
     try {
       const response = await updateOrderStatus(orderId, newStatus);
@@ -61,6 +71,22 @@ export default function AdminOrdersPage() {
       }
     } catch (error) {
       console.error('Error updating order status:', error);
+    } finally {
+      setUpdatingOrder(null);
+    }
+  };
+
+  const confirmCancelOrder = async () => {
+    if (!cancelConfirm) return;
+    
+    setUpdatingOrder(cancelConfirm.id);
+    setCancelConfirm(null);
+    
+    try {
+      await updateOrderStatus(cancelConfirm.id, 'CANCELLED');
+      setOrders((prev) => prev.filter((order) => order.id !== cancelConfirm.id));
+    } catch (error) {
+      console.error('Error cancelling order:', error);
     } finally {
       setUpdatingOrder(null);
     }
@@ -234,6 +260,48 @@ export default function AdminOrdersPage() {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Cancel Confirmation Modal */}
+      {cancelConfirm && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="card max-w-md w-full">
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-500/20 rounded-full">
+                  <AlertTriangle size={24} className="text-red-500" />
+                </div>
+                <h2 className="text-xl font-bold text-white">Anuluj zamówienie</h2>
+              </div>
+              <button onClick={() => setCancelConfirm(null)} className="text-gray-400 hover:text-white">
+                <X size={24} />
+              </button>
+            </div>
+
+            <p className="text-gray-300 mb-4">
+              Czy na pewno chcesz anulować zamówienie <span className="font-bold text-white">#{cancelConfirm.id}</span>?
+            </p>
+            
+            <div className="bg-[#2a2a2a] rounded-lg p-3 mb-6">
+              <p className="text-sm text-gray-400">Klient: <span className="text-white">{cancelConfirm.user?.name}</span></p>
+              <p className="text-sm text-gray-400">Wartość: <span className="text-white">{cancelConfirm.totalPrice.toFixed(2)} zł</span></p>
+              <p className="text-sm text-gray-400">Produktów: <span className="text-white">{cancelConfirm.items?.length || 0}</span></p>
+            </div>
+            
+            <p className="text-sm text-orange-400 mb-6">
+              ⚠️ Zamówienie zostanie trwale usunięte, a stan magazynu przywrócony.
+            </p>
+
+            <div className="flex gap-3">
+              <button onClick={() => setCancelConfirm(null)} className="btn btn-secondary flex-1">
+                Nie, zostaw
+              </button>
+              <button onClick={confirmCancelOrder} className="btn btn-danger flex-1">
+                Tak, anuluj
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
