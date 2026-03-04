@@ -1,8 +1,10 @@
 import axios from 'axios';
 import type { AuthResponse, User, Customer, Category, Product, Order, DashboardStats } from '../types';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: `${API_BASE_URL}/api`,
 });
 
 // Add auth token to requests

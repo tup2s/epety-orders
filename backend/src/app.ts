@@ -8,8 +8,14 @@ import orderRoutes from './routes/orders';
 
 const app = express();
 
+// CORS configuration
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || '*',
+  credentials: true,
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
@@ -19,17 +25,10 @@ app.use('/api/admin/customers', customerRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
-import prisma from './utils/prisma';
 
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
-// Debug endpoint (remove in production)
-app.get('/api/debug/users', async (req, res) => {
-  const users = await prisma.user.findMany({ select: { id: true, login: true, role: true } });
-  res.json({ DATABASE_URL: process.env.DATABASE_URL?.slice(0, 30), users });
 });
 
 export default app;
