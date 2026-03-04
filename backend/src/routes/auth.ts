@@ -10,7 +10,6 @@ const router = Router();
 router.post('/login', async (req, res) => {
   try {
     const { login, password } = req.body;
-    console.log('Login attempt:', { login, hasPassword: !!password });
 
     if (!login || !password) {
       return res.status(400).json({ error: 'Podaj login i hasło' });
@@ -19,14 +18,12 @@ router.post('/login', async (req, res) => {
     const user = await prisma.user.findUnique({
       where: { login },
     });
-    console.log('User found:', user ? { id: user.id, login: user.login } : null);
 
     if (!user) {
       return res.status(401).json({ error: 'Nieprawidłowy login lub hasło' });
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
-    console.log('Password valid:', isValidPassword);
 
     if (!isValidPassword) {
       return res.status(401).json({ error: 'Nieprawidłowy login lub hasło' });
